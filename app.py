@@ -3,7 +3,7 @@ from flask_migrate import Migrate
 from models import db, ImageData
 import os
 
-app = Flask(_name_, instance_relative_config=True)
+app = Flask(__name__, instance_relative_config=True)
 
 # Asegurar que el directorio instance exista
 os.makedirs(app.instance_path, exist_ok=True)
@@ -49,5 +49,5 @@ def get_data():
 def index():
     return render_template('index.html')
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
