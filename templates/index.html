@@ -1,72 +1,56 @@
-{% extends "base.html" %}
-{% block title %}Restaurant List{% endblock %}
-{% block head %}
-    {{ super() }}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Visor de Imágenes Subidas</title>
     <style>
-      body {
-          min-height: 75rem;
-          padding-top: 4.5rem;
-      }
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        tr:hover { background-color: #f5f5f5; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <h1>Datos Subidos al Cloud</h1>
+    <table id="data-table">
+        <thead>
+            <tr>
+                <th>Archivo</th>
+                <th>Rojo</th>
+                <th>Verde</th>
+                <th>Azul</th>
+                <th>Fecha</th>
+                <th>Usuario</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Datos se insertarán aquí dinámicamente -->
+        </tbody>
+    </table>
 
-      .score {
-        display: block;
-        font-size: 16px;
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .score-wrap {
-        display: inline-block;
-        position: relative;
-        height: 19px;
-      }
-      
-      .score .stars-active {
-        color: #EEBD01;
-        position: relative;
-        z-index: 10;
-        display: inline-block;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      
-      .score .stars-inactive {
-        color: grey;
-        position: absolute;
-        top: 0;
-        left: 0;
-        -webkit-text-stroke: initial;
-        /* overflow: hidden; */
-      }
-  </style>
-{% endblock %}
-{% block content %}
-      <h1>Restaurants</h1>
-
-      {% if True %}
-          <table class="table">
-              <thead>
-                  <tr>
-                      <th>Name</th>
-                      <th>Rating</th>
-                      <th class="text-end">Details</th>
-                  </tr>
-              </thead>
-              <tbody>
-                  {% for restaurant in restaurants %}
-                      <tr>
-                          <td>{{ restaurant.name }}</td>
-                          <td>{% include "star_rating.html" %}</td>
-                          <td class="text-end"><a href="{{ url_for('details', id=restaurant.id) }}" class="btn btn-sm btn-primary">Details</a></td>
-                      </tr>
-                  {% endfor %}
-              </tbody>
-          </table>
-      {% else %}
-          <p>No restaurants exist.  Select Add new restaurant to add one.</p>
-      {% endif %}
-
-      <div class="d-flex justify-content-end">
-              <a href="{{ url_for('create_restaurant') }}" class="btn btn-success px-4 gap-3">Add new restaurant</a>
-      </div>
-{% endblock %}
+    <script>
+        fetch('/api/data')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('data-table').getElementsByTagName('tbody')[0];
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.filename}</td>
+                        <td>${item.redCount}</td>
+                        <td>${item.greenCount}</td>
+                        <td>${item.blueCount}</td>
+                        <td>${new Date(item.timestamp).toLocaleString()}</td>
+                        <td>${item.username}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener los datos:', error);
+            });
+    </script>
+</body>
+</html>
